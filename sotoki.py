@@ -424,7 +424,7 @@ def offline(output, cores):
     pool = Pool(cores)
     # prepare a list of (images_path, filepaths_chunck) to feed
     # `process` function via pool.map
-    args = zip([images_path]*cores, filepaths, range(cores))
+    args = zip([images_path]*cores, filepaths_chunks, range(cores))
     print 'start offline process with', cores, 'cores'
     pool.map(process, args)
 
@@ -440,7 +440,7 @@ def lazy(query):
             offset += 1
 
 
-def render(templates, database, output):
+def render(templates, database, output, title):
     # wrap the actual database
     session = make_session(database)
 
@@ -469,6 +469,7 @@ def render(templates, database, output):
         templates,
         tags=tags,
         rooturl=".",
+        title=title,
     )
     # tag page
     os.makedirs(os.path.join(output, 'tag'))
@@ -585,7 +586,8 @@ if __name__ == '__main__':
         # render templates into `output`
         templates = 'templates'
         output = os.path.join('work', 'output')
-        render(templates, database, output)
+        #TODO with last PR add title before
+        render(templates, database, output, title)
         render_users(templates, database, output)
         # offline images
         cores = cpu_count() / 2
